@@ -40,9 +40,14 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.all(50),
           child: Column(
             children: [
-              Expanded(child: DragTargetWidget()),
               Container(
-                height: size.height * .2,
+                  height: size.height * .8 - 50,
+                  width: size.width,
+                  child: DragTargetWidget()),
+              Container(
+                color: Colors.blue,
+                height: size.height * .2-50,
+                width: size.width,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
