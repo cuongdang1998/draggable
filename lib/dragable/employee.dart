@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 
 class Employee {
@@ -5,26 +7,20 @@ class Employee {
   Offset offset;
 
   Employee({this.id, this.offset});
+  Map<String, dynamic> toJson() => {'id': id, 'offset': offset};
+  factory Employee.fromJson(Map<String, dynamic> json) =>
+      Employee(id: json["id"], offset: ["offset"] as Offset);
 }
 
 class Employees with ChangeNotifier {
   List<Employee> employees = [];
-  Employee acceptedData;
+  static String encodeEmployees(List<Employee> employees) =>
+      json.encode(employees
+          .map<Map<String, dynamic>>((employee) => employee.toJson())
+          .toList());
 
-  Employee get getAcceptedData => acceptedData;
-
-  changeAcceptedData(Employee data) {
-    acceptedData = data;
-    notifyListeners();
-  }
-
-  removeLastItem() {
-    employees.removeLast();
-    notifyListeners();
-  }
-
-  addItemToList(Employee item) {
-    employees.add(item);
-    notifyListeners();
-  }
+  static List<Employee> decodeEmployees(String employees) =>
+      (json.decode(employees) as List<dynamic>)
+          .map<Employee>((e) => Employee.fromJson(e))
+          .toList();
 }

@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'dragable/drag_target_widget.dart';
 import 'dragable/draggable_widget.dart';
@@ -13,8 +17,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ImageInfo _imageInfo;
   AssetImage assestImage;
-  double getheight;
-  double getywidth;
+  File file;
+  //
+  File _image;
+  final _picker = ImagePicker();
+  StreamController streamController = StreamController<File>.broadcast();
+
   void initState() {
     super.initState();
     assestImage = AssetImage('assets/images/commercialoffice.jpg');
@@ -31,38 +39,81 @@ class _HomePageState extends State<HomePage> {
     }));
   }
 
+  Future _getImageFromTablet() async {
+    final image = await _picker.getImage(source: ImageSource.gallery);
+    _image = File(image.path);
+    return _image;
+  }
+
+  Future _getImageFromDesktop() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      file = File(result.files.single.path);
+    } else {
+      // User canceled the picker
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          padding: EdgeInsets.all(50),
-          child: Column(
-            children: [
-              Container(
-                  height: size.height * .8 - 50,
-                  width: size.width,
-                  child: DragTargetWidget()),
-              Container(
-                color: Colors.blue,
-                height: size.height * .2-50,
-                width: size.width,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        body: StreamBuilder<File>(
+            stream: streamController.stream,
+            builder: (context, snapshot) {
+              print("snappshot : ${snapshot.data}");
+              return Container(
+                padding: EdgeInsets.all(50),
+                child: Column(
                   children: [
-                    DraggableWidget(),
-                    RaisedButton(
-                      onPressed: () {},
-                      child: Text("Load"),
-                      color: Colors.blue.withOpacity(.5),
-                    )
+                    snapshot.hasData
+                        ? Container(
+                            height: size.height * .7 - 50,
+                            width: size.width,
+                            child: DragTargetWidget(
+                                file: snapshot.hasData ? snapshot.data : null))
+                        : Container(
+                            height: size.height * .7 - 50,
+                            width: size.width,
+                            child: GestureDetector(
+                              child: Container(
+                                child: Icon(
+                                  Icons.image,
+                                  size: 300,
+                                ),
+                              ),
+                            ),
+                          ),
+                    Container(
+                      // color: Colors.blue,
+                      height: size.height * .2 - 50,
+                      width: size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          DraggableWidget(),
+                          RaisedButton(
+                            onPressed: () async {
+                              if (Platform.isIOS || Platform.isAndroid) {
+                                print("tablet");
+                                streamController.sink
+                                    .add(await _getImageFromTablet());
+                              } else {
+                                print("desktop");
+                                // _getImageFromDesktop();
+                              }
+                            },
+                            child: Text("Load"),
+                            color: Colors.blue.withOpacity(.5),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
+              );
+            }),
       ),
     );
   }
