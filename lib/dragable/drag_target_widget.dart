@@ -20,23 +20,20 @@ class DragTargetWidgetState extends State<DragTargetWidget> {
   List<DraggableItem> draggableListInTarget = [];
   GlobalKey _targetKey = GlobalKey();
   Size sizeTarget;
-  String employeelist;
+  // String employeelist;
   @override
   void initState() {
-    print("======Start init state function =====");
     WidgetsBinding.instance.addPostFrameCallback((_) => getSize());
     super.initState();
   }
 
   getSize() async {
-    print("======= Start addPostFramCallback function =======");
     RenderBox box = _targetKey.currentContext.findRenderObject();
     sizeTarget = box.size;
   }
 
   @override
   Widget build(BuildContext context) {
-    print("====Start build function=====");
     var size = MediaQuery.of(context).size;
     print("Size ${size} - size target: ${sizeTarget}");
     return Consumer<Employees>(
@@ -50,24 +47,25 @@ class DragTargetWidgetState extends State<DragTargetWidget> {
         print(
             'Accept with detail dx - dy: ${data.offset.dx} - ${data.offset.dy}');
         // offset = data.offset - Offset(50, 75);
-        // if (offset > Offset(0, 0) &&
-        //     offset < Offset(sizeTarget.width - 50, sizeTarget.height - 50)) {
-        //   // var dx =
-        //   //     num.parse(((offset.dx * 100) / size.width).toStringAsFixed(2));
-        //   // var dy =
-        //   //     num.parse(((offset.dy * 100) / size.height).toStringAsFixed(2));
-        //   // print("dx ${dx} - ${num.parse(dx.toStringAsFixed(2))}");
-        //   // print("dy ${dy} - ${num.parse(dy.toStringAsFixed(2))}");
-        //   employees.employees
-        //       .add(Employee(id: employees.employees.length, offset: offset));
-        //   setState(() {});
-        // }
+        offset = data.offset;
+        if (offset > Offset(0, 0) &&
+            offset < Offset(sizeTarget.width - 50, sizeTarget.height - 50)) {
+          // var dx =
+          //     num.parse(((offset.dx * 100) / size.width).toStringAsFixed(2));
+          // var dy =
+          //     num.parse(((offset.dy * 100) / size.height).toStringAsFixed(2));
+          // print("dx ${dx} - ${num.parse(dx.toStringAsFixed(2))}");
+          // print("dy ${dy} - ${num.parse(dy.toStringAsFixed(2))}");
+          employees.employees
+              .add(Employee(id: employees.employees.length, offset: offset));
+          setState(() {});
+        }
 
         ///
-        offset = data.offset;
-        employees.employees
-            .add(Employee(id: employees.employees.length, offset: offset));
-        setState(() {});
+        // offset = data.offset;
+        // employees.employees
+        //     .add(Employee(id: employees.employees.length, offset: offset));
+        // setState(() {});
       }, onMove: (data) {
         print("OnMove dx - dy ${data.offset.dx} - ${data.offset.dy}");
       }, builder: (context, List<Offset> acceptdata, rejectdata) {

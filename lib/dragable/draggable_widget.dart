@@ -7,7 +7,7 @@ class DraggableWidget extends StatelessWidget {
   final int index;
   @override
   Widget build(BuildContext context) {
-    return Draggable(
+    return Draggable<Offset>(
         dragAnchor: DragAnchor.pointer,
         childWhenDragging: ChairIcon(
           index: index,
@@ -17,7 +17,7 @@ class DraggableWidget extends StatelessWidget {
           print("onDragEnd ${detail.offset}");
         },
         onDragCompleted: () {},
-        data: offset,
+        // data: offset,
         child: ChairIcon(
           index: index,
           offsetDisplay: offset,
